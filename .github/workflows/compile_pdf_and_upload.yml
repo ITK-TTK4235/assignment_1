@@ -1,58 +1,77 @@
+# Workflow name
 name: Build and Optionally Release LaTeX Document
 
+# Triggers the workflow on a push to the 'main' branch
 on:
   push:
     branches:
       - main
 
+# Jobs to be executed
 jobs:
+  # Job for compiling the LaTeX document
   compile_latex:
+    # Specifies the runner environment
     runs-on: ubuntu-latest
+    # Defines outputs that can be used by other jobs
     outputs:
-      version: ${{ steps.check_version.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
     steps:
+      # Checks-out the repository under $GITHUB_WORKSPACE, so the workflow can access it
       - name: Set up Git repository
         uses: actions/checkout@v2
 
+      # Determines the version tag from the commit message
       - name: Check commit message for version tag
-        id: check_version
+        id: version
+        shell: bash
         run: |
           VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "commit_message=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
 
+      # Compiles the LaTeX document
       - name: Compile LaTeX document
         uses: dante-ev/latex-action@latest
         with:
           working_directory: Main
           root_file: main.tex
 
+      # Uploads the compiled PDF as an artifact
       - name: Upload PDF file as artifact
+        if: env.version != ''
         uses: actions/upload-artifact@v3
         with:
-          name: PDF-${{ steps.check_version.outputs.version || 'latest' }}
+          name: PDF-${{ env.version }}
           path: Main/main.pdf
 
+  # Job for creating a release with the compiled PDF
   create_release:
     runs-on: ubuntu-latest
     needs: compile_latex
     if: needs.compile_latex.outputs.version != ''
     steps:
+      # Downloads the artifact (compiled PDF)
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
           name: PDF-${{ needs.compile_latex.outputs.version }}
 
+      # Creates a new release on GitHub
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ needs.compile_latex.outputs.version }}
           release_name: Release ${{ needs.compile_latex.outputs.version }}
-          body: 'Release notes or changelog here'
+          # Sets the body of the release to the full commit message
+          body: ${{ env.commit_message }}
           draft: false
           prerelease: false
 
+      # Uploads the compiled PDF to the release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
