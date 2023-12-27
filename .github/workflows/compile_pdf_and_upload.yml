@@ -1,4 +1,3 @@
-# Workflow name
 name: Build and Optionally Release LaTeX Document
 
 # Triggers the workflow on a push to the 'main' branch
