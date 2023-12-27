@@ -1,96 +1,53 @@
-name: Build and Optionally Release LaTeX Document
+name: Build LaTeX document and upload
 
-# Trigger the workflow on a push to the 'main' branch
 on:
   push:
     branches:
       - main
 
-# Define the jobs in the workflow
 jobs:
-  # Job to compile the LaTeX document
-  compile_latex:
-    # Use the latest Ubuntu runner
+  build_latex:
     runs-on: ubuntu-latest
     steps:
-      # Check out the code in the repository
       - name: Set up Git repository
         uses: actions/checkout@v2
 
-      # Check the commit message for a version tag and create a release flag if found
       - name: Check commit message for version tag
-        id: version
-        shell: bash
+        id: check_version
         run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
-          if [[ -n "$VERSION" ]]; then
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
-            echo "commit_message=${{ github.event.head_commit.message }}" >> $GITHUB_ENV
-            touch release.flag
-          fi
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" || echo "")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      # Compile the LaTeX document
       - name: Compile LaTeX document
         uses: dante-ev/latex-action@latest
         with:
           working_directory: Main
           root_file: main.tex
 
-      # Upload the release flag as an artifact (only if version tag is found)
-      - name: Upload release flag as artifact
-        if: env.VERSION != ''
-        uses: actions/upload-artifact@v3
-        with:
-          name: release-flag
-          path: release.flag
-
-      # Upload the compiled PDF as an artifact (only if version tag is found)
       - name: Upload PDF file as artifact
-        if: env.VERSION != ''
         uses: actions/upload-artifact@v3
         with:
-          name: PDF-${{ env.VERSION }}
+          name: PDF
           path: Main/main.pdf
 
-  # Job to create a release with the compiled PDF
-  create_release:
-    runs-on: ubuntu-latest
-    needs: compile_latex
-    steps:
-      # Download the release flag to check if a release should be made
-      - name: Download release flag
-        uses: actions/download-artifact@v3
-        with:
-          name: release-flag
-
-      # Download the PDF artifact
-      - name: Download PDF Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: PDF-${{ needs.compile_latex.outputs.version }}
-
-      # Create a new release on GitHub (if release flag exists)
       - name: Create Release
-        if: always() && steps.download-release-flag.outcome == 'success'
-        id: create_release
+        if: env.VERSION != ''
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.VERSION }}
           release_name: Release ${{ env.VERSION }}
-          body: ${{ env.commit_message }}
           draft: false
           prerelease: false
 
-      # Upload the compiled PDF to the release (if release is created successfully)
       - name: Upload Release Asset
-        if: steps.create_release.outcome == 'success'
+        if: env.VERSION != ''
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./PDF-${{ env.VERSION }}.pdf
-          asset_name: main-${{ env.VERSION }}.pdf
+          asset_path: Main/main.pdf
+          asset_name: main.pdf
           asset_content_type: application/pdf
