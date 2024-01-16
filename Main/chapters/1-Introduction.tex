@@ -29,7 +29,7 @@ I denne øvingen får dere utlevert en \verb|.c|-fil i \verb|source|-mappen. Tab
  \hline
  \textbf{Filer} & \textbf{Skal denne filen endres?}  \\ [0.5ex] 
  \hline\hline
-  \verb|source/main.c| & nei  \\ 
+  \verb|source/main.c| & ja  \\ 
  \hline
 \end{tabular}
 \end{center}
@@ -39,11 +39,17 @@ I denne øvingen får dere utlevert en \verb|.c|-fil i \verb|source|-mappen. Tab
 
 
 Denne øvingen er ment som en rask innføring i Linux, slik  at resten av labopplegget fremover ikke foregår i et helt ukjent miljø. Seksjon \ref{sec:2-innføring} gir en kjapp innføring i grunnleggende kommandoer som er nyttige i Linux, og som trengs for å fullføre oppgavene som følger etter i seksjon \ref{sec:3-oppgave}. Dere får godkjent øving 1 ved at dere demonstrerer foran en studass at dere har gjort alle oppgavene i seksjon \ref{sec:3-oppgave}. 
-
 I tillegg har tre appendikser blitt lagt til (se appendiks \ref{4-appendix}, \ref{app:cygwin} og \ref{app:VM}) i tilfelle det er noen som enten har lyst til å installere Linux på egen maskin med dual booting, eller jobbe på et Unix-liknende omgivelse for Windows med Cygwin, eller installere Linux på en VM (\textbf{V}irtual \textbf{M}achine).
 
 
 
+\section{Litt om GNU/Linux}
+
+Linux (Linux kernel) ble først utviklet av Linus Torvalds på 90-tallet da han studerte ved Universitetet ved Helsinki. Linus ble interessert i utvikling operativsystemer gjennom sine studier, men ble frustrert av datidens lisensbegrensninger på tilgjengelige operativsystemer. I 1991 begynte han å utvikle kjernen (kernel) til det som skulle bli til Linux-kjernen som vi kjenner det i dag. En operativsystemkjerne fungerer som et bindeledd mellom maskinvare og programmer. Den er ansvarlig for å starte systemet og tildele ressurser til programmer. En kjerne er i seg selv ikke særlig nyttig uten resten av operativsystemet, slik som enhetsdrivere, brukerprogrammer, kompilatorer, osv. Heldigvis eksisterte allerede GNU prosjektet, som hadde veldig like mål om å tilby fri (som i frihet)\footnote{"Free as in freedom, not as in beer" - Richard Stallman, Grunnlegger av GNU Prosjektet} programvare, og i grunn bare manglet en velfungerende kjerne. Ved å kombinere Linux-kjernen med GNU-programvare ble Linux om til et fullverdig operativsystem som mange i dag omtaler som "GNU/Linux". 
+
+GNU/Linux kommer i dag som flere ulike varianter, eller distribusjoner, avhengig av hvilken programvare som brukes. Noen av de mest populære distribusjonene er Debian, Fedora Linux, Arch Linux. Datamaskinene dere skal bruke på lab bruker Ubuntu, som er en variant av Debian med et mer begynnervennlig brukergensesnitt.
+
+Et av kjerneprinsippene til både GNU- og Linux-prosjektet er at programvare, samt tilhørende kildekode, skal være åpent tilgjengelig og respektere brukerens friheter til å bruke, endre og (re)distriburere den. Dette gjelder også utviklingen av Linux. Hvem som helst kan bidra til Linux-kjernen, og kun et fåtall utviklere jobber med å vedlikeholde prosjektet profesjonelt. Projektenes dugnadsånd har vært en stor faktor i GNU/Linux sin utvikling, og holdningen har spredd seg til å bli en hjørnestein i kulturen til dagens programvareutviklere. Dette er også en av flere grunner til at programvareutviklere foretrekker å bruke Linux både til daglibruk og profesjonelt. GNU/Linux brukes i dag av Android, ChromeOS, majoriteten av tjenere på internett og stor andel av alle tilpassede datasystemer. SpaceX sin Falcon 9, NASA sin Perserverence og Tesla sine biler er bare noen få nevneverdige Linux-brukere. 
 
 
 
@@ -201,7 +207,17 @@ student@Ubuntu:$\smallsim$$\verb|$|$ mkdir demo
 student@Ubuntu:$\smallsim$$\verb|$|$ cd demo
 \end{lstlisting}
 
+\cprotect\subsection{\lstinline{touch}}
 
+Kommandoen \verb|touch| angir endrings- og tilgangstider for filer.  Hvis en fil ikke finnes, opprettes den med standardtillatelser. 
+
+\begin{lstlisting}[mathescape=true]
+student@Ubuntu:$\smallsim$$\verb|$|$ touch newfile.c
+student@Ubuntu:$\smallsim$$\verb|$|$ ls
+
+Documents Downloads Pictures Music
+Public Videos Desktop Templates newfile.c
+\end{lstlisting}
 
 
 \cprotect\subsection{\lstinline{file}}
@@ -260,6 +276,20 @@ En ting som er verdt å vite om er at Ubuntu tester ut nye pakker en stund før 
 
 
 
-\end{alphasection}
 
+\cprotect\subsection{\lstinline{nano}}
+Når man jobber med GNU/Linux er det ikke alltid gitt at man kan bruke tekstredigeringsprogrammer som \textit{Word}, \textit{Visual Studio Code} eller \textit{Notepad++}. Derfor er det lurt å kunne bruke verktøy som fungerer \textit{uten} et grafisk brukergrensesnitt. \verb|nano|, kort for \textit{\textbf{N}ano's \textbf{ANO}ther Editor}, er et enkelt tekstredigeringsvektøy som fungerer i terminalen. 
+
+\begin{lstlisting}[mathescape=true]
+student@Ubuntu:$\smallsim$$\verb|$|$ nano main.c
+\end{lstlisting}
+
+Nederst i terminalvinduet vil du se enkelte kommandoforslag som \verb|^X| for \textit{Exit}. Kontraintuitivt betyr \verb|^| at vi skal bruke \verb|Ctrl|. Dette betyr at for å gå ut av \verb|nano| må vi taste \verb|Ctrl| og \verb|X| etter hverandre. For å forkaste eller lagre endringene du har gjort i en fil må du deretter taste \verb|Y| for "Yes" og \verb|N| for "No".
+
+\cprotect\subsection{Kommentar til Tekstredigering}
+
+Det finnes veldig mange populære programmer for tekst- og filredigering for GNU/Linux. Noen av dem er \verb|vim|, \verb|neovim|, \verb|emacs|, \verb|gedit|, \verb|sublime-text|, \verb|notepadqq|, \verb|VSCode|\footnote{Kort for \textit{Visual Studio Code}, laget av Microsoft} og \verb|nano|. Disse varierer både i grensesnitt og brukervennlighet. For små endringer i filer kan alternativ som \verb|nano| og \verb|vim| være gode programmer. Dersom du ikke har noe tidligere erfaring med GNU/Linux anbefaler vi at du bruker enten \href{https://code.visualstudio.com/}{VSCode} eller open-source programmet \href{https://github.com/VSCodium/vscodium}{VSCodium}\footnote{VSCode er basert på VSCodium} for mer omfattende endringer. Disse programmene er \textit{source-code editors} skreddersydde for programvareutvikling. Videre i øvingsopplegget kommer vi til å bruke \verb|VSCode| som eksemel på hvordan vi kan bruke verktøyene vi lærer om i et utviklingsmiljø.
+
+\end{alphasection}
 \setcounter{section}{0}
+
