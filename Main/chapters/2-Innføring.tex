@@ -196,6 +196,19 @@ int main(){
 }
 \end{lstlisting}
 
+\verb|cat| kan også brukes til å \textit{pipe} output fra en kommando inn i en annen kommando. Symbolene for piping kan være \text{\textbar} eller \verb|>| ut fra formålet. Dersom man ønsker at innholdet i \verb|main.c| skal mates inn i kommandoen \verb|less|, som er et verktøy for å lese innholdet i tekstfiler, kan man \textit{pipe} ved bruk av kodeordet \text{\textbar} på følgende måte:
+
+\begin{lstlisting}[mathescape=true]
+student@Ubuntu:$\smallsim$$\verb|$|$ cat main.c | less
+\end{lstlisting}
+
+Dersom man føler at innholdet i \verb|main.c| hører bedre hjemme i \verb|silly_greeting.c|, kan man kopiere innholdet i \verb|main.c| til \verb|silly_greeting.c| gjennom piping med kodeordet \verb|>| på følgende måte:
+
+\begin{lstlisting}[mathescape=true]
+student@Ubuntu:$\smallsim$$\verb|$|$ cat main.c > silly_greeting.c
+
+\end{lstlisting}
+
 \cprotect\subsection{\lstinline{man}}
 
 \verb|man|, kort for \textit{manual page} er den viktigste kommandoen i Linux. Denne kommandoen brukes for å lære om bruken av en hvilken som helst kommando. Et relevant eksempel er kommandoen \verb|man ls| som brukes for å generere en liste over hvilke flagg som \verb|ls| støtter. 
